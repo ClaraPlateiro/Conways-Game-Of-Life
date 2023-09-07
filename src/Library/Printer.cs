@@ -1,31 +1,41 @@
 using System;
 using System.Text;
+using System.Threading;
 
-namespace PII_Game_Of_Life 
+namespace PII_Game_Of_Life
 {
-    public class Printer //Structurer
-{
-    public void Print(bool[,] board)
+    public class ImprimirTablero
     {
-        StringBuilder output = new StringBuilder();
-
-        for (int y = 0; y < board.GetLength(1); y++)
+        public static Board ImpTablero(Board tablerito)
         {
-            for (int x = 0; x < board.GetLength(0); x++)
+        bool[,] b = tablerito.Tablero; //variable que representa el tablero
+        int width = b.GetLength(0); //ancho
+        int height = b.GetLength(1); //alto
+        
+        Console.Clear();
+        StringBuilder s = new StringBuilder();
+        for (int y = 0; y<height;y++)
+        {
+            for (int x = 0; x<width; x++)
             {
-                if (board[x, y])
+                if(b[x,y])
                 {
-                    output.Append("|X|");
+                    s.Append("|X|");
                 }
                 else
                 {
-                    output.Append("___");
+                    s.Append("___");
                 }
             }
-            output.AppendLine();
+            s.Append("\n");
         }
+        Console.WriteLine(s.ToString());
+        //=================================================
+        tablerito = Logica.LogicaJuego(tablerito);
 
-        Console.WriteLine(output);
+        //=================================================
+        Thread.Sleep(300);
+        return tablerito;
+        }
     }
-}
 }

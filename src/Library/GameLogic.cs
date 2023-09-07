@@ -1,70 +1,60 @@
+using System;
+
 namespace PII_Game_Of_Life
 {
-    public class GameLogic //Information Holder
+    public class Logica
     {
-        public bool[,] CalculateNextGeneration(bool[,] currentGeneration)
+        
+        public static Board LogicaJuego(Board board)
         {
-            int width = currentGeneration.GetLength(0);
-            int height = currentGeneration.GetLength(1);
-            bool[,] nextGeneration = new bool[width, height];
+        bool[,] gameBoard = board.Tablero; 
+        int boardWidth = gameBoard.GetLength(0);
+        int boardHeight = gameBoard.GetLength(1);
 
-            for (int x = 0; x < width; x++)
+        bool[,] cloneboard = new bool[boardWidth, boardHeight];
+        for (int x = 0; x < boardWidth; x++)
+        {
+            for (int y = 0; y < boardHeight; y++)
             {
-                for (int y = 0; y < height; y++)
+                int aliveNeighbors = 0;
+                for (int i = x-1; i<=x+1;i++)
                 {
-                    int aliveNeighbors = CountAliveNeighbors(currentGeneration, x, y);
-
-                    if (currentGeneration[x, y])
+                    for (int j = y-1;j<=y+1;j++)
                     {
-                        if (aliveNeighbors < 2 || aliveNeighbors > 3)
+                        if(i>=0 && i<boardWidth && j>=0 && j < boardHeight && gameBoard[i,j])
                         {
-                            nextGeneration[x, y] = false; // Muere por baja población o sobrepoblación
-                        }
-                        else
-                        {
-                            nextGeneration[x, y] = true; // Sobrevive
-                        }
-                    }
-                    else
-                    {
-                        if (aliveNeighbors == 3)
-                        {
-                            nextGeneration[x, y] = true; // Nace por reproducción
-                        }
-                        else
-                        {
-                            nextGeneration[x, y] = false; // Sigue muerta
+                            aliveNeighbors++;
                         }
                     }
                 }
+                if(gameBoard[x,y])
+                {
+                    aliveNeighbors--;
+                }
+                if (gameBoard[x,y] && aliveNeighbors < 2)
+                {
+                    //Celula muere por baja población
+                    cloneboard[x,y] = false;
+                }
+                else if (gameBoard[x,y] && aliveNeighbors > 3)
+                {
+                    //Celula muere por sobrepoblación
+                    cloneboard[x,y] = false;
+                }
+                else if (!gameBoard[x,y] && aliveNeighbors == 3)
+                {
+                    //Celula nace por reproducción
+                    cloneboard[x,y] = true;
+                }
+                else
+                {
+                    //Celula mantiene el estado que tenía
+                    cloneboard[x,y] = gameBoard[x,y];
+                }
             }
-
-            return nextGeneration;
         }
-
-        private int CountAliveNeighbors(bool[,] board, int x, int y)
-        {
-            int count = 0;
-            int width = board.GetLength(0);
-            int height = board.GetLength(1);
-
-            for (int i = x - 1; i <= x + 1; i++)
-            {
-                for (int j = y - 1; j <= y + 1; j++)
-                {
-                    if (i >= 0 && i < width && j >= 0 && j < height && board[i, j])
-                    {
-                        count++;
-                    }
-                }
-            }
-
-            if (board[x, y])
-            {
-                count--; // Descuenta la propia célula si está viva
-            }
-
-            return count;
+        Board newBoard = new Board(cloneboard);
+        return newBoard;
         }
     }
 }
